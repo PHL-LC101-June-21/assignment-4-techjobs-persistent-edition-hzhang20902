@@ -1,5 +1,6 @@
 package org.launchcode.techjobs.persistent.controllers;
 
+import org.launchcode.techjobs.persistent.models.Employer;
 import org.launchcode.techjobs.persistent.models.Job;
 import org.launchcode.techjobs.persistent.models.Skill;
 import org.launchcode.techjobs.persistent.models.data.EmployerRepository;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by LaunchCode
@@ -42,29 +44,29 @@ public class HomeController {
 
     @GetMapping("add")
     public String displayAddJobForm(Model model) {
-        model.addAttribute("title", "Add Job");
-        model.addAttribute(new Job());
+        model.addAttribute("title", "Add a Job");
+        model.addAttribute("subTitle", "Add One Job, Get A Second Job Free!");
         model.addAttribute("employers", employerRepository.findAll());
         model.addAttribute("skills", skillRepository.findAll());
+        model.addAttribute(new Job());
         return "add";
     }
 
     @PostMapping("add")
     public String processAddJobForm(@ModelAttribute @Valid Job newJob,
-                                       Errors errors, Model model, @RequestParam Integer employerId, @RequestParam List<Integer> skills) {
+                                       Errors errors, Model model, @RequestParam int employerId, @RequestParam List<Integer> skills) {
 
         if (errors.hasErrors()) {
-            model.addAttribute("title", "No go, amigo");
-
+            model.addAttribute("subTitle", "Try a different job.");
             return "add";
+        } else {
+            Optional<Employer> employer = employerRepository.findById(employerId);
+       //   Employer change = (Employer) employer.get();
+            List<Skill> skillObjs = (List<Skill>) skillRepository.findAllById(skills);
+            newJob.setSkills(skillObjs);
+       //    newJob.setEmployer(employer.get());
+        jobRepository.save(newJob);
         }
-        model.addAttribute("title", "New Job Listed");
-        model.addAttribute("employers", employerRepository.findById(employerId));
-        List<Skill> skillObjs = (List<Skill>) skillRepository.findAllById(skills);
-        newJob.setSkills(skillObjs);
-        model.addAttribute("skills", skillObjs);
-        model.addAttribute("job",employerRepository.findAll());
-
         return "redirect:";
     }
 
@@ -73,7 +75,7 @@ public class HomeController {
         model.addAttribute("jobs", jobRepository.findAll());
 
 
-        return "view/" + jobId;
+        return "view" + jobId;
     }
 
 
