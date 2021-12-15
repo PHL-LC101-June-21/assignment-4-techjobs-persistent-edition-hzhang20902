@@ -5,7 +5,7 @@
 
 <nav th:replace="fragments :: page-header"></nav>
 
-<h1>Add Job</h1>
+<h1 th:text="${subTitle}">Add Job</h1>
 
 <form method="post" style="max-width:600px;">
     <div class="form-group">
@@ -24,7 +24,7 @@
         <a th:href="@{'/employers/add'}">Add Employers</a>
     </div>
 
-    <div class="form-group">
+    <div class="form-group" name="skillsBox">
         <label th:for="skills">Skills</label>
         <th:block th:each="skill : ${skills}">
             <input type="checkbox" name="skills" th:value="${skill.id}">
