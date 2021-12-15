@@ -1,6 +1,7 @@
 package org.launchcode.techjobs.persistent.controllers;
 
 import org.launchcode.techjobs.persistent.models.Job;
+import org.launchcode.techjobs.persistent.models.Skill;
 import org.launchcode.techjobs.persistent.models.data.EmployerRepository;
 import org.launchcode.techjobs.persistent.models.data.JobRepository;
 import org.launchcode.techjobs.persistent.models.data.SkillRepository;
@@ -52,15 +53,17 @@ public class HomeController {
     public String processAddJobForm(@ModelAttribute @Valid Job newJob,
                                        Errors errors, Model model, @RequestParam Integer employerId, @RequestParam List<Integer> skills) {
 
-        if (!errors.hasErrors()) {
-            model.addAttribute("title", "New Job Listed");
-            model.addAttribute("employer", employerRepository.findById(employerId));
-            model.addAttribute("skills", skillRepository.findAllById(skills));
+        if (errors.hasErrors()) {
+            model.addAttribute("title", "No go, amigo");
 
             return "add";
         }
-        model.addAttribute("job",employerRepository.findAll());
+        model.addAttribute("title", "New Job Listed");
         model.addAttribute("employers", employerRepository.findById(employerId));
+        List<Skill> skillObjs = (List<Skill>) skillRepository.findAllById(skills);
+        newJob.setSkills(skillObjs);
+        model.addAttribute("skills", skillObjs);
+        model.addAttribute("job",employerRepository.findAll());
 
         return "redirect:";
     }
